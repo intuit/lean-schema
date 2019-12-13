@@ -1,0 +1,6 @@
+types.yaml
+intuit_schema.json
+queries/
+codegen/
+node_modules/
+*~
