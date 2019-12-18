@@ -75,7 +75,7 @@ You need to run this once to setup and if a new version of LeanSchema is release
 ## Run the Docker image
 `sudo make docker_codegen`
 
-You run this whenever your GraphQL queries/Intuit Schema changes. You **do not** need to run `docker_build` again though!
+You run this whenever your GraphQL queries or Schema changes. You **do not** need to run `docker_build` again though!
 
 ## Build Artifacts
 The generated code is located in `./codegen`. If
@@ -96,7 +96,7 @@ Example:
 
 # Extra Options
 ## Missing Types
-LeanSchema is fairly aggresive in how many Types it prunes from the Intuit Schema. If you notice certain Types or Domains-of-Types are missing in the `lean_schema.json` file, you have these options:
+LeanSchema is fairly aggresive in how many Types it prunes from the Schema. If you notice certain Types or Domains-of-Types are missing in the `lean_schema.json` file, you have these options:
 
 ## Increase the INPUT_OBJECT_DEPTH_LEVEL variable
 In `./codegen.vars`:
