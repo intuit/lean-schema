@@ -1,5 +1,5 @@
 
-# Schema Decomposition / Lean Schema
+# Intuit Lean Schema
 
 | LeanSchema Version | Supported Apollo Version(s) |
 | ------------- |:-------------:|
@@ -16,7 +16,7 @@ decomp.py     319     31    90%
 Welcome to Intuit LeanSchema! LeanSchema is a tool to shrink your GraphQL Schema for your production Mobile Applications. If you have a semi-large Schema (say, > 100 Types) then LeanSchema will help you reduce your Mobile App sizes and reduce your compilation times.
 
 ### Sure, but what does this **do**?
-It takes a set of GraphQL Queries and a GraphQL Schema as input and produces a much **smaller** Lean Schema.
+It takes a set of GraphQL Queries and a GraphQL Schema as input and produces a much **smaller** Lean Schema. The lean GraphQL Schema is passed to Apollo Client/Codegen to generate iOS Swift Code.
 
 **Any** application/service/library/widget that uses the a large GraphQL Schema can benefit. Here's a real-life example for the Intuit QuickBooks Self-Employed Mobile iOS App:
 ```
