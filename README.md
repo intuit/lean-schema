@@ -9,12 +9,12 @@ decomp.py     319     31    90%
 ```
 
 ## Overview
-For a Product Overview, read [the wiki doc](https://wiki.intuit.com/display/CTODevSP/Lean+Schema%3A+Product+Strategy)
+Welcome to Intuit LeanSchema! LeanSchema is a tool to shrink your GraphQL Schema for your production Mobile Applications. If you have a semi-large Schema (say, > 100 Types) then LeanSchema will help you reduce your Mobile App sizes and reduce your compilation times.
 
 ### Sure, but what does this **do**?
-It takes a set of GraphQL Queries and the Intuit Schema as input and produces a much **smaller** Lean Schema.
+It takes a set of GraphQL Queries and a GraphQL Schema as input and produces a much **smaller** Lean Schema.
 
-**Any** application/service/library/widget that uses the full Intuit Schema can benefit. Here's a real-life benefit for the QBSE Mobile iOS App:
+**Any** application/service/library/widget that uses the full Intuit Schema can benefit. Here's a real-life benefit for the Intuit QuickBooks Self-Employed Mobile iOS App:
 ```
 GraphQL Query folder size:
 Full Schema : 7.1 MB
@@ -27,8 +27,10 @@ Lean Schema : 216 seconds
 In this case, LeanSchema reduced the amount of generated Swift code by 75% and reduced compile time by 50%.
 
 ### Who's using this?
-- [QBSE Mobile for iOS](https://github.intuit.com/qbse/rocoto/pull/1760)
-- [Turbo-Graphql](https://github.intuit.com/Trusted-Open-Platform/turbo-graphql)
+LeanSchema is used by many Production Mobile Apps at Intuit, including (but not limited to):
+- QuickBooks Self-Employed
+- Payments Mobile
+- Turbo Mobile
 
 ## Requirements
 - Docker >= 17. The code here was tested with `Docker version 17.03.2-ce, build f5ec1e2`
