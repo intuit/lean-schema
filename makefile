@@ -34,7 +34,7 @@ docker_build:
 
 docker_codegen:
 	cp -r $(GRAPHQL_QUERIES_DIR) $(DOCKER_BUILD_QUERIES_DIR)
-	cp $(INTUIT_SCHEMA_FILE) $(DOCKER_BUILD_QUERIES_DIR)/intuit_schema.json
+	cp $(SCHEMA_FILE) $(DOCKER_BUILD_QUERIES_DIR)/intuit_schema.json
 	bash ./copy_types_yaml.sh "$(TYPES_YAML_FILE)" $(DOCKER_BUILD_QUERIES_DIR)/types.yaml
 	docker run -v $(CURDIR)/$(DOCKER_BUILD_QUERIES_DIR):/opt/intuit/pte/leanschema/queries -v $(CURDIR)/codegen:/opt/mount -e INPUT_OBJECT_DEPTH_LEVEL leanschema make all && echo "Wrote output files to $(CURDIR)/codegen"
 	python post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
