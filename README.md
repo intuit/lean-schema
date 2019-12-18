@@ -14,7 +14,7 @@ Welcome to Intuit LeanSchema! LeanSchema is a tool to shrink your GraphQL Schema
 ### Sure, but what does this **do**?
 It takes a set of GraphQL Queries and a GraphQL Schema as input and produces a much **smaller** Lean Schema.
 
-**Any** application/service/library/widget that uses the full Intuit Schema can benefit. Here's a real-life benefit for the Intuit QuickBooks Self-Employed Mobile iOS App:
+**Any** application/service/library/widget that uses the a large GraphQL Schema can benefit. Here's a real-life example for the Intuit QuickBooks Self-Employed Mobile iOS App:
 ```
 GraphQL Query folder size:
 Full Schema : 7.1 MB
@@ -24,7 +24,7 @@ Swift compile times clean build:
 Full Schema : 526 seconds
 Lean Schema : 216 seconds
 ```
-In this case, LeanSchema reduced the amount of generated Swift code by 75% and reduced compile time by 50%.
+LeanSchema reduced the amount of generated Swift code by 75% and reduced compile time by 50%.
 
 ### Who's using this?
 LeanSchema is used by many Production Mobile Apps at Intuit, including (but not limited to):
@@ -53,7 +53,7 @@ This software has been tested on Ubuntu Linux 16.04 and Mac OS.
 Example: `GRAPHQL_QUERIES_DIR=/home/$YOU/proj/qb-mobile-graphql`
 
 ### Set the `SCHEMA_FILE` variable
-Example: `SCHEMA_FILE=/home/$YOU/proj/qb-mobile-graphql/graphql.json`
+Example: `SCHEMA_FILE=/home/$YOU/proj/graphql.json`
 
 **Please Note**! LeanSchema currently understands [GraphQL Introspection Format](https://blog.apollographql.com/three-ways-to-represent-your-graphql-schema-a41f4175100d) Schemas. Please see the linked article for how to convert SDL and GraphQLSchemaObject Schemas to the Introsepction Format.
 
