@@ -41,24 +41,21 @@ configurations at this point in time.**
 
 This software has been tested on Ubuntu Linux 16.04 and Mac OS.
 
-## Clone the Project
-Clone [this repo](https://github.intuit.com/prussell/intuit-api) for now, and `cd ./lean-schema`
+## Get the Code
+[Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
 
 ## Read and Edit the `codegen.properties` file
 `codegen.properties` is used to control important things like:
 - Where are your queries located?
-- Where is your Intuit Schema located?
+- Where is your GraphQL Schema located?
 
 ### Set the `GRAPHQL_QUERIES_DIR` variable
 Example: `GRAPHQL_QUERIES_DIR=/home/$YOU/proj/qb-mobile-graphql`
 
-### Set the `INTUIT_SCHEMA_FILE` variable
-Example: `INTUIT_SCHEMA_FILE=/home/$YOU/proj/qb-mobile-graphql/graphql.json`
+### Set the `SCHEMA_FILE` variable
+Example: `SCHEMA_FILE=/home/$YOU/proj/qb-mobile-graphql/graphql.json`
 
-Please use an official Intuit Schema GraphQL JSON file [from the
-official repo](https://github.intuit.com/SBG/schema-graphql).  The
-Dockerfile needs to copy an Intuit Schema file to the image. **The
-file MUST be in GraphQL Schema JSON format!!!**
+**Please Note**! LeanSchema currently understands [GraphQL Introspection Format](https://blog.apollographql.com/three-ways-to-represent-your-graphql-schema-a41f4175100d) Schemas. Please see the linked article for how to convert SDL and GraphQLSchemaObject Schemas to the Introsepction Format.
 
 ### Set the `COPY_UNMATCHED_FILES_DIR` variable
 
@@ -139,7 +136,7 @@ domains:
 On initial project setup and if a new version of the tool is released.
 
 ## When do I need to run `docker_codegen`?
-When your GraphQL queries or Intuit Schema change.
+When your GraphQL queries or GraphQL Schema change.
 
 ## How do I edit the Apollo command for Codegen?
 If you need to change the Apollo commands, just change the `codegen_lean` rule in the `makefile`:
