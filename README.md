@@ -2,7 +2,7 @@
 # Schema Decomposition / Lean Schema
 
 | LeanSchema Version | Supported Apollo Version(s) |
-| ------------- |:-------------:| -----:|
+| ------------- |:-------------:|
 | 1.0.0      | 1.9.2 | 
 
 ## Coverage
