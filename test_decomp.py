@@ -6,7 +6,7 @@ Tests for Intuit Schema Decomp aka LeanSchema
 __author__ = "prussell"
 
 import pytest
-import decomp
+import lean_schema.decomp as decomp
 import argparse
 import json
 from unittest.mock import patch
@@ -26,7 +26,7 @@ def test_check_input_object_depth_level():
 
 
 def test_get_types_from_file():
-    G = decomp.mk_adj_from_graphql_schema(decomp.load_schema("test/schema.json"))
+    G = decomp.mk_adj_from_graphql_schema(decomp.load_schema("tests/schema.json"))
     types_file = {"types": ["Network_Contact", "Entity"], "domains": ["risk"]}
 
     R = decomp.get_types_from_file(G, types_file)
@@ -38,7 +38,7 @@ def test_get_types_from_file():
 
 
 def test_get_types_from_file_with_depth():
-    G = decomp.mk_adj_from_graphql_schema(decomp.load_schema("test/schema.json"))
+    G = decomp.mk_adj_from_graphql_schema(decomp.load_schema("tests/schema.json"))
     types_file = {"types": [{"CreateSales_SaleInput": {"depth": 2}}]}
 
     R = decomp.get_types_from_file(G, types_file)
@@ -85,7 +85,7 @@ def test_all_scalar_types():
 def test_main_happy_path(print_mock, stdin_mock):
     stdin_mock.fileno = lambda: 2
     stdin_mock.read = lambda: json.dumps({"types": ["Entity"]})
-    args = ["test/schema.json", "--types-file=test/types.yaml", "--log-level=DEBUG"]
+    args = ["tests/schema.json", "--types-file=tests/types.yaml", "--log-level=DEBUG"]
     subschema = decomp.main(args)
     subgraph = decomp.mk_adj_from_graphql_schema(subschema)
     assert print_mock.call_count == 1

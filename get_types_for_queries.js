@@ -40,20 +40,25 @@ function getFragmentType(context, name) {
 function GetAllSchemaTypes(context) {
     return {
 	Argument: function Argument(node) {
+	    console.log("Visiting Argument");
 	    var type = context.getType();
 	    var parentType = context.getParentType();
 	    if (type) {
+		console.log("Added type " + type);
 		context.types.add(type);
 	    }
 	    if (parentType) {
+		console.log("Added parentType " + type);
 		context.types.add(parentType);
 	    }
 	},
 	BooleanValue: function BooleanValue(node) {
+	    console.log("Visiting BooleanValue");
 	    var inputType = context.getInputType();
 	    if (inputType) {
 		var type = (0, _definition.getNamedType)(inputType);
 		context.types.add(type);
+		console.log("Added type " + type);
 	    }
 	},
 	Directive: function Directive(node) {},
@@ -62,61 +67,77 @@ function GetAllSchemaTypes(context) {
 	EnumTypeDefinition: function EnumTypeDefinition(node) {},
 	EnumTypeExtension: function EnumTypeExtension(node) {},
 	EnumValue: function EnumValue(node) {
+	    console.log("Visiting EnumValue");
 	    var type = (0, _definition.getNamedType)(context.getInputType());
 	    if (type) {
+		console.log("Added type " + type);
 		context.types.add(type);
 	    }
 	},
 	EnumValueDefinition: function EnumValueDefinition(node) {},
 	Field: function Field(node) {
+	    console.log("Visiting Field");
 	    var type = context.getType();
 	    var parentType = context.getParentType();
 	    if (type) {
+		console.log("Added type " + type);
 		context.types.add(type);
 	    }
 	    if (parentType) {
+		console.log("Added parentType " + parentType);
 		context.types.add(parentType);
 	    }
 	},
 	FieldDefinition: function FieldDefinition(node) {},
 	FloatValue: function FloatValue(node) {
+	    console.log("Visiting FloatValue");
 	    var inputType = context.getInputType();
 	    if (inputType) {
 		var type = (0, _definition.getNamedType)(inputType);
 		context.types.add(type);
+		console.log("Added type " + type);
 	    }
 	},
 	FragmentDefinition: function FragmentDefinition(node) {
+	    console.log("Visiting FragmentDefinition");
 	    var type = (0, _typeFromAST.typeFromAST)(context.getSchema(), node.typeCondition);
 	    if (type) {
+		console.log("Added type " + type);
 		context.types.add(type);
 	    }
 	},
 	FragmentSpread: function FragmentSpread(node) {
+	    console.log("Visiting FragmentSpread");
 	    var fragName = node.name.value;
 	    var fragType = getFragmentType(context, fragName);
 	    var parentType = context.getParentType();
 	    if (fragType) {
+		console.log("Added type " + fragType);
 		context.types.add(fragType);
 	    }
 	    if (parentType) {
+		console.log("Added type " + parentType);
 		context.types.add(parentType);
 	    }
 	},
 	InlineFragment: function InlineFragment(node) {
+	    console.log("Visiting InlineFragment");
 	    var typeCondition = node.typeCondition;
 	    if (typeCondition) {
 		var type = (0, _typeFromAST.typeFromAST)(context.getSchema(), typeCondition);
 		if (type) {
+		    console.log("Added type " + type);
 		    context.types.add(type);
 		}
 	    }
 	    var parentType = context.getParentType();
 	    if (parentType) {
+		console.log("Added parentType " + parentType);
 		context.types.add(parentType);
 	    }
 	    var fragType = context.getType();
 	    if (fragType) {
+		console.log("Added fragType " + fragType);
 		context.types.add(fragType);
 	    }
 	},
@@ -124,36 +145,45 @@ function GetAllSchemaTypes(context) {
 	InputObjectTypeExtension: function InputObjectTypeExtension(node) {},
 	InputValueDefinition: function InputValueDefinition(node) {},
 	IntValue: function IntValue(node) {
+	    console.log("Visiting IntValue");
 	    var inputType = context.getInputType();
 	    if (inputType) {
 		var type = (0, _definition.getNamedType)(inputType);
 		context.types.add(type);
+		console.log("Added type " + type);
 	    }
 	},
 	InterfaceTypeDefinition: function InterfaceTypeDefinition(node) {},
 	InterfaceTypeExtension: function InterfaceTypeExtension(node) {},
 	ListType: function ListType(node) {},
 	ListValue: function ListValue(node) {
+	    console.log("Visiting ListValue");
 	    var type = (0, _definition.getNullableType)(context.getParentInputType());
 	    if (type) {
 		context.types.add(type);
+		console.log("Added type " + type);
 	    }
 	},
 	Name: function Name(node) {},
 	NamedType: function NamedType(node) {
+	    console.log("Visiting NamedType");
 	    var schema = context.getSchema();
 	    var typeName = node.name.value;
 	    var type = schema.getType(typeName);
 	    if (type) {
+		console.log("Added Type " + type);
 		context.types.add(type);
 	    }
 	},
 	NonNullType: function NonNullType(node) {},
 	NullValue: function NullValue(node) {
+	    console.log("Visiting NullValue");
 	    var type = context.getInputType();
 	    context.types.add(type);
+	    console.log("Added Type " + type);
 	},
 	ObjectField: function ObjectField(node) {
+	    console.log("Visiting ObjectField")
 	    var parentType = (0, _definition.getNamedType)(context.getParentInputType());
 	    if (parentType) {
 		context.types.add(parentType);
@@ -166,6 +196,7 @@ function GetAllSchemaTypes(context) {
 	ObjectTypeDefinition: function ObjectTypeDefinition(node) {},
 	ObjectTypeExtension: function ObjectTypeExtension(node) {},
 	ObjectValue: function ObjectValue(node) {
+	    console.log("ObjectValue visited");
 	    var type = (0, _definition.getNamedType)(context.getInputType());
 	    if (!(0, _definition.isInputObjectType)(type)) {
 		var inputType = context.getInputType();
@@ -182,6 +213,7 @@ function GetAllSchemaTypes(context) {
 	    Object.keys(inputFields).forEach(function (fieldName) {
 		var fieldType = inputFields[fieldName].type;
 		if (fieldType) {
+		    console.log("Added fieldType " + fieldType);
 		    context.types.add(fieldType);
 		}
 	    });
@@ -193,24 +225,30 @@ function GetAllSchemaTypes(context) {
 	SchemaDefinition: function SchemaDefinition(node) {},
 	SelectionSet: function SelectionSet(node) {},
 	StringValue: function StringValue(node) {
+	    console.log("StringValue visited");
 	    var inputType = context.getInputType();
 	    if (inputType) {
 		var type = (0, _definition.getNamedType)(inputType);
 		context.types.add(type);
+		console.log("Added type " + type);
+		
 	    }
 	},
 	UnionTypeDefinition: function UnionTypeDefinition(node) {},
 	UnionTypeExtension: function UnionTypeExtension(node) {},
 	Variable: function Variable(node) {},
 	VariableDefinition: function VariableDefinition(node) {
+	    console.log("Visiting VariableDefinition");
 	    var type = (0, _typeFromAST.typeFromAST)(context.getSchema(), node.type);
 	    if (type) {
+		console.log("Added type " + type);
 		context.types.add(type);
 	    }
 	    var name = node.variable.name.value;
 	    var defaultValue = node.defaultValue;
 	    var inputType = context.getInputType();
 	    if (inputType) {
+		console.log("Added inputType " + inputType);
 		context.types.add(inputType);
 	    }
 	}
