@@ -296,7 +296,14 @@ def mk_adj_from_graphql_schema(graphql_schema: dict) -> dict:
 
     """
     # We don't care about anything other than types
-    types = graphql_schema["data"]["__schema"]["types"]
+    if "data" in graphql_schema:
+        types = graphql_schema["data"]["__schema"]["types"]
+    elif "__schema" in graphql_schema:
+        types = graphql_schema["__schema"]["types"]
+    elif "types" in graphql_schema:
+        types = graphql_schema["types"]
+    else:
+        raise ValueError("Invalid GraphQL Schema, must have a 'types' section")
     adj = {}
 
     for T in types:

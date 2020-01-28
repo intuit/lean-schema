@@ -102,3 +102,9 @@ ENV/
 
 # IDE
 .idea/
+
+# JS stuff for convert.js
+node_modules/
+package-lock.json
+tests/schema.json
+		

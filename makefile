@@ -5,10 +5,11 @@ export
 VENV_DIR = ./venv
 PYTHON3 = $(VENV_DIR)/bin/python3
 PIP3 = $(VENV_DIR)/bin/pip3
+PYTEST = $(VENV_DIR)/bin/pytest
 
 test:
-	pip install -r test.requirements.txt
-	pytest tests/
+	$(PIP3) install -r test.requirements.txt
+	$(PYTEST) tests/
 
 clean:
 	- find . -name "*~" | xargs rm
