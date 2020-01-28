@@ -3,7 +3,7 @@
 
 | LeanSchema Version | Supported Apollo Version(s) |
 | ------------- |:-------------:|
-| 1.0.0      | 1.9.2 | 
+| 2.0.0      | 2.21.3 | 
 
 ## Coverage
 ```bash
