@@ -1,0 +1,8 @@
+types:
+  - "CreateSales_SaleInput":
+      depth: 2
+  - "Network_Contact"
+  - "Entity"
+  
+domains:
+  - "risk"

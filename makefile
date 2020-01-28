@@ -1,6 +1,5 @@
 # Include everything from the properties file as an env var referencable here
 include codegen.properties
-include codegen.vars
 export
 
 VENV_DIR = ./venv
@@ -26,6 +25,7 @@ clean:
 	- rm ./log.decomp
 	- rm ./apollo.log
 	- rm -rf lean_schema.egg-info
+	- find . -name __pycache__ | xargs rm -rf
 
 apollo:
 	- which apollo || npm install -g apollo@1.9.2
