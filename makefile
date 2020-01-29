@@ -5,7 +5,7 @@ export
 VENV_DIR = ./venv
 PYTHON3 = $(VENV_DIR)/bin/python3
 PIP3 = $(VENV_DIR)/bin/pip3
-PYTEST = $(VENV_DIR)/bin/pytest
+PYTEST = $(VENV_DIR)/bin/python3 -m pytest
 
 .PHONY: lean_schema test clean install codegen_full codegen_lean
 
