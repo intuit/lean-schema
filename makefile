@@ -8,6 +8,7 @@ PIP3 = $(VENV_DIR)/bin/pip3
 PYTEST = $(VENV_DIR)/bin/pytest
 
 test:
+	$(PIP3) install -r requirements.txt
 	$(PIP3) install -r test.requirements.txt
 	$(PYTEST) tests/
 
