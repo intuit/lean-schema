@@ -1,5 +1,5 @@
 """
-Create some subset of the INtuit Schema given some input parameters
+Create some subset of the Intuit Schema given some input parameters
 
 """
 __author__ = "prussell"
