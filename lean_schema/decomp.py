@@ -49,6 +49,9 @@ class SchemaNode(object):
         self.inbound = []
         self.outbound = []
 
+    def __repr__(self):
+        return "SchemaNode : {}".format(self.key)
+
 
 """
 User defined GraphQL Types. In GraphQL, Object is NOT the root of
@@ -88,18 +91,7 @@ class SwiftLanguage(object):
     }
 
 
-class JavaLanguage(object):
-    """
-    Data for the Java Language back-end. Pretty much don't change
-    anything, since the V4 Schema has a bunch of assumptions that its
-    targeting Java that should not be there.
-
-    """
-
-    KEY = "java"
-
-
-LANGUAGES_TABLE = {SwiftLanguage.KEY: SwiftLanguage, JavaLanguage.KEY: JavaLanguage}
+LANGUAGES_TABLE = {SwiftLanguage.KEY: SwiftLanguage}
 
 
 class GraphQLTypeRef(object):
@@ -281,7 +273,7 @@ def update_type_refs(root, graph, subgraph_keys, scalars_dict: dict = None):
                 stack.append(value)
 
 
-def mk_adj_from_graphql_schema(graphql_schema: dict) -> dict:
+def mk_graph_from_schema(graphql_schema: dict) -> dict:
     """
     Make a simpla Adjaceny List representation of the Schema Typyes
     from a GraphQL Schema formatted Object.
@@ -437,7 +429,7 @@ def reduce_graphql_schema(schema, graph, subgraph_keys):
 
     """
     # Get root set
-    schema["data"]["__schema"]["types"] = [
+    schema["__schema"]["types"] = [
         graph[key].value for key in subgraph_keys if key in graph
     ]
     return schema
@@ -606,6 +598,8 @@ def main(args):
     with open(args.SCHEMA_FILE, encoding="utf-8") as ifile:
         schema = json.load(ifile)
 
+    schema = schema["data"] if "data" in schema else schema
+
     # Types file is optional, data can come from stdin or it
     types_file = {}
     if args.types_file is not None:
@@ -636,9 +630,9 @@ def main(args):
 
     logging.debug("Adding GraphQLTypeRef types to Schema")
     for typeref_type in GRAPHQL_TYPE_REF_DICT.values():
-        schema["data"]["__schema"]["types"].append(typeref_type.to_dict())
+        schema["__schema"]["types"].append(typeref_type.to_dict())
 
-    graph = mk_adj_from_graphql_schema(schema)
+    graph = mk_graph_from_schema(schema)
     # Load all directly stated Types/Domains from file
     root_keys = set()
     types_size = 0
@@ -665,23 +659,6 @@ def main(args):
     # Get the set of keys for the valid subgraph
     subgraph_keys = {obj.get_name() for obj in GRAPHQL_TYPE_REF_DICT.values()}
     subgraph_keys.update(root_keys)
-
-    # Add Entity and all of its direct neighbors up to N levles
-    # Add Fundamental types and direct refs
-    for type_key in [
-        "Entity",
-        "Query",
-        # "Mutation"
-    ]:
-        type_obj = graph[type_key].value
-        type_keys = {type_key}.union(set(get_outbound_type_refs(type_obj)))
-        subgraph_keys.update(type_keys)
-        logging.debug(
-            "Types increased from {} to {} by adding direct refs of {}".format(
-                types_size, len(subgraph_keys), type_key
-            )
-        )
-        types_size = len(subgraph_keys)
 
     # Stuff like {'BigDecimal', 'Boolean', 'Float', 'ID', 'Int',
     # 'Long', 'String'} is defined in the Schema, so have to add it
@@ -768,7 +745,7 @@ def main(args):
     # Shrink the schema to only include whats in the subgraph
     reduce_graphql_schema(schema, graph, subgraph_keys)
 
-    mk_adj_from_graphql_schema(schema)
+    mk_graph_from_schema(schema)
 
     logging.debug("END run {}".format(run_uuid))
     print(json.dumps(schema))
