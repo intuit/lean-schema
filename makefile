@@ -7,7 +7,7 @@ PYTHON3 = $(VENV_DIR)/bin/python3
 PIP3 = $(VENV_DIR)/bin/pip3
 PYTEST = $(VENV_DIR)/bin/python3 -m pytest
 
-.PHONY: lean_schema test clean install codegen_full codegen_lean
+.PHONY: lean_schema test clean install codegen
 
 test:
 	$(PIP3) install -r requirements.txt
@@ -42,11 +42,9 @@ python3:
 install: apollo python3
 	- $(PIP3) install .
 
-codegen_full: lean_schema
-	ls -lah queries/intuit_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=queries/intuit_schema.json --queries="queries/**/*.graphql" codegen.full.swift
-
-codegen_lean: lean_schema
+codegen: lean_schema
 	ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+	$(PYTHON3) ./lean_schema/post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
 
 lean_schema:
 	./check_graphqljson.sh $(INTUIT_SCHEMA_FILE)

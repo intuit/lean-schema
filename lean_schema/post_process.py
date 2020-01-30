@@ -28,7 +28,7 @@ def main(prog_args: typing.List[str]):
         "--copy-codegen-files",
         help=(
             "Copy generated code files to"
-            + +" some destination directory and attempt"
+            + " some destination directory and attempt"
             + " to match by query filenames"
         ),
         choices=("true", "True", "False", "false", True, False),
