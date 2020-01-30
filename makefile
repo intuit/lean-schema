@@ -48,6 +48,7 @@ codegen: lean_schema
 
 lean_schema:
 	./check_graphqljson.sh $(INTUIT_SCHEMA_FILE)
+	mkdir queries/
 	cp $(INTUIT_SCHEMA_FILE) queries/intuit_schema.json
 	find $(GRAPHQL_QUERIES_DIR) -name '*.graphql' | xargs -I % cp % ./queries/
 	find $(GRAPHQL_QUERIES_DIR) -name '*.gql' | xargs -I % cp % ./queries/
