@@ -17,8 +17,7 @@ test:
 
 install:
 	python3 -m venv $(VENV_DIR)
-	sudo npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
-	#npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
+	npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
 	$(PIP3) install --upgrade pip
 	$(PIP3) install -r requirements.txt
 
