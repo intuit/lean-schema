@@ -53,7 +53,10 @@ brew upgrade npm
 [Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
 
 ## Install the Project
-`cd lean-schema && make install`
+```bash
+cd lean-schema
+make install
+```
 
 ## Read and Edit the `codegen.properties` file
 `codegen.properties` is used to control important things like:
