@@ -113,7 +113,7 @@ make clean
 LeanSchema is fairly aggresive in how many Types it prunes from the Schema. If you notice certain Types or Domains-of-Types are missing in the `lean_schema.json` file, you have these options:
 
 ## Increase the INPUT_OBJECT_DEPTH_LEVEL variable
-In `./codegen.vars`:
+In `./codegen.properties`:
 ```
 # Default value is zero
 INPUT_OBJECT_DEPTH_LEVEL=0
