@@ -6,6 +6,7 @@ VENV_DIR = ./venv
 PYTHON3 = $(VENV_DIR)/bin/python3
 PIP3 = $(VENV_DIR)/bin/pip3
 PYTEST = $(VENV_DIR)/bin/python3 -m pytest
+APOLLO_PACKAGE_VERSION=2.22.0
 
 .PHONY: lean_schema test clean install codegen
 
@@ -32,7 +33,7 @@ clean:
 	- find . -name __pycache__ | xargs rm -rf
 
 apollo:
-	- which apollo || npm install -g apollo@1.9.2
+	- which apollo || npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
 
 python3:
 	- ./install_python3.sh
@@ -43,14 +44,14 @@ install: apollo python3
 	- $(PIP3) install .
 
 codegen: lean_schema
-	ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+	ls -lah lean_schema.json && apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
 	$(PYTHON3) ./lean_schema/post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
 
 lean_schema:
 	./check_graphqljson.sh $(INTUIT_SCHEMA_FILE)
-	mkdir queries/
+	- mkdir queries/
 	cp $(INTUIT_SCHEMA_FILE) queries/intuit_schema.json
 	find $(GRAPHQL_QUERIES_DIR) -name '*.graphql' | xargs -I % cp % ./queries/
 	find $(GRAPHQL_QUERIES_DIR) -name '*.gql' | xargs -I % cp % ./queries/
-	bash ./copy_types_yaml.sh "$(TYPES_YAML_FILE)" queries/types.yaml
+	#bash ./copy_types_yaml.sh "$(TYPES_YAML_FILE)" queries/types.yaml
 	$(PYTHON3) ./lean_schema/get_types.py queries/intuit_schema.json queries/ | $(PYTHON3) ./lean_schema/decomp.py queries/intuit_schema.json --types-file queries/types.yaml --input-object-depth-level=$(INPUT_OBJECT_DEPTH_LEVEL) | tee lean_schema.json 1> /dev/null
