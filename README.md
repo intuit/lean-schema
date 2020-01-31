@@ -39,13 +39,15 @@ LeanSchema is used by many Production Mobile Apps at Intuit, including (but not 
 ## Requirements
 - [Python](https://www.python.org/downloads/) >= 3.7.3.
 - [NPM](https://www.npmjs.com/get-npm) >= 6.13.7.
-- If you are on Mac OS, then just do `brew install python` and `brew upgrade python` in a Terminal. For `npm`, it's `brew install npm` and `brew upgrade npm`.
 - A set of GraphQL queries compatible with `Apollo v2.22.0`. Any set of valid GraphQL queries **should** work.
 
-This software has been tested on Ubuntu Linux 16.04 and Mac OS.
-
-**We have not tested/do not support any other software environments or
-configurations at this point in time.**
+### Install Requirements on Mac OS
+```bash
+brew install python
+brew upgrade python
+brew install npm
+brew upgrade npm
+```
 
 ## Get the Code
 [Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
