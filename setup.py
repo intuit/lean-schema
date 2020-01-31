@@ -10,8 +10,7 @@ setup(
     description="The LeanSchema Project to decompose your GraphQL Schema.",
     author="Philip Russell",
     author_email="philip_russell@intuit.com",
-    url="TODO",
-    # install_requires=["svcfabric.graphql.api.common"],
+    url="https://github.com/intuit/lean-schema/",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
