@@ -53,7 +53,10 @@ brew upgrade npm
 [Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
 
 ## Install the Project
-`cd lean-schema && make install`
+```bash
+cd lean-schema
+make install
+```
 
 ## Read and Edit the `codegen.properties` file
 `codegen.properties` is used to control important things like:
@@ -79,7 +82,9 @@ COPY_UNMATCHED_FILES_DIR is properly set, then it will be copied to
 $COPY_UNMATCHED_FILES_DIR/Types.swift.
 
 ## Run the Code Generation
-`make codegen`
+```bash
+make codegen
+```
 
 ## Build Artifacts
 The generated code is located in `./codegen`. If
@@ -99,14 +104,16 @@ Example:
 ```
 
 ## Clean-up ie Reset the Project
-`make clean`
+```bash
+make clean
+```
 
 # Extra Options
 ## Missing Types
 LeanSchema is fairly aggresive in how many Types it prunes from the Schema. If you notice certain Types or Domains-of-Types are missing in the `lean_schema.json` file, you have these options:
 
 ## Increase the INPUT_OBJECT_DEPTH_LEVEL variable
-In `./codegen.vars`:
+In `./codegen.properties`:
 ```
 # Default value is zero
 INPUT_OBJECT_DEPTH_LEVEL=0
@@ -139,28 +146,24 @@ domains:
 
 # Questions & Answers
 
-## When do I need to run `docker_build`?
+## When do I need to run `make install`?
 On initial project setup and if a new version of the tool is released.
 
-## When do I need to run `docker_codegen`?
+## When do I need to run `make codegen`?
 When your GraphQL queries or GraphQL Schema change.
 
 ## How do I edit the Apollo command for Codegen?
-If you need to change the Apollo commands, just change the `codegen_lean` rule in the `makefile`:
+If you need to change the Apollo commands, just change the `codegen` rule in the `makefile`:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
 ```
 
 ## Turn off the file copy & match for generated files?
 Set `COPY_GENERATED_FILES_AFTER_CODEGEN=false` in `codegen.properties`
 
 ## Generate a single large file for codegen?
-Change the `codegen_lean` makefile command to this:
+Change the `codegen` makefile command to this:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/.graphql" codegen.lean.swift
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen.lean.swift
 ```
 Only a single file named `codegen.lean.swift` will be created.
-
-

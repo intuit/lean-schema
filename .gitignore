@@ -108,5 +108,9 @@ node_modules/
 package-lock.json
 tests/schema.json
 
-# Coverage
+# Project
 cov_html
+codegen
+queries
+log.decomp
+lean_schema.json
