@@ -146,28 +146,24 @@ domains:
 
 # Questions & Answers
 
-## When do I need to run `docker_build`?
+## When do I need to run `make install`?
 On initial project setup and if a new version of the tool is released.
 
-## When do I need to run `docker_codegen`?
+## When do I need to run `make codegen`?
 When your GraphQL queries or GraphQL Schema change.
 
 ## How do I edit the Apollo command for Codegen?
-If you need to change the Apollo commands, just change the `codegen_lean` rule in the `makefile`:
+If you need to change the Apollo commands, just change the `codegen` rule in the `makefile`:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
 ```
 
 ## Turn off the file copy & match for generated files?
 Set `COPY_GENERATED_FILES_AFTER_CODEGEN=false` in `codegen.properties`
 
 ## Generate a single large file for codegen?
-Change the `codegen_lean` makefile command to this:
+Change the `codegen` makefile command to this:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/.graphql" codegen.lean.swift
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen.lean.swift
 ```
 Only a single file named `codegen.lean.swift` will be created.
-
-
