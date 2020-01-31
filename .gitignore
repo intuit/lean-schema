@@ -107,4 +107,6 @@ ENV/
 node_modules/
 package-lock.json
 tests/schema.json
-		
+
+# Coverage
+cov_html
