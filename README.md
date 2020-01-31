@@ -3,7 +3,7 @@
 
 | LeanSchema Version | Supported Apollo Version(s) |
 | ------------- |:-------------:|
-| 2.0.0      | 2.21.3 | 
+| 2.0.0      | 2.22.0 | 
 
 ## Coverage
 ```bash
@@ -37,16 +37,21 @@ LeanSchema is used by many Production Mobile Apps at Intuit, including (but not 
 - Turbo Mobile
 
 ## Requirements
-- Docker >= 17. The code here was tested with `Docker version 17.03.2-ce, build f5ec1e2`
-- A set of GraphQL queries compatible with `Apollo v1.9.2`.
+- [Python](https://www.python.org/downloads/) >= 3.7.3.
+- [NPM](https://www.npmjs.com/get-npm) >= 6.13.7.
+- If you are on Mac OS, then just do `brew install python` and `brew upgrade python` in a Terminal. For `npm`, it's `brew install npm` and `brew upgrade npm`.
+- A set of GraphQL queries compatible with `Apollo v2.22.0`. Any set of valid GraphQL queries **should** work.
+
+This software has been tested on Ubuntu Linux 16.04 and Mac OS.
 
 **We have not tested/do not support any other software environments or
 configurations at this point in time.**
 
-This software has been tested on Ubuntu Linux 16.04 and Mac OS.
-
 ## Get the Code
 [Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
+
+## Install the Project
+`cd lean-schema && make install`
 
 ## Read and Edit the `codegen.properties` file
 `codegen.properties` is used to control important things like:
@@ -56,8 +61,8 @@ This software has been tested on Ubuntu Linux 16.04 and Mac OS.
 ### Set the `GRAPHQL_QUERIES_DIR` variable
 Example: `GRAPHQL_QUERIES_DIR=/home/$YOU/proj/qb-mobile-graphql`
 
-### Set the `SCHEMA_FILE` variable
-Example: `SCHEMA_FILE=/home/$YOU/proj/graphql.json`
+### Set the `GRAPHQL_SCHEMA_FILE` variable
+Example: `GRAPHQL_SCHEMA_FILE=/home/$YOU/proj/graphql.json`
 
 **Please Note**! LeanSchema currently understands [GraphQL Introspection Format](https://blog.apollographql.com/three-ways-to-represent-your-graphql-schema-a41f4175100d) Schemas. Please see the linked article for how to convert SDL and GraphQLSchemaObject Schemas to the Introsepction Format.
 
@@ -71,15 +76,8 @@ Example: Swift code generation creates a file called
 COPY_UNMATCHED_FILES_DIR is properly set, then it will be copied to
 $COPY_UNMATCHED_FILES_DIR/Types.swift.
 
-## Build the Docker image
-`sudo make docker_build`
-
-You need to run this once to setup and if a new version of LeanSchema is released.
-
-## Run the Docker image
-`sudo make docker_codegen`
-
-You run this whenever your GraphQL queries or Schema changes. You **do not** need to run `docker_build` again though!
+## Run the Code Generation
+`make codegen`
 
 ## Build Artifacts
 The generated code is located in `./codegen`. If
@@ -97,6 +95,9 @@ Example:
 ├── updateCompanyInfoFromSettings.graphql # This is a query
 └── updateCompanyInfoFromSettings.graphql.swift # This is the matching Swift file
 ```
+
+## Clean-up ie Reset the Project
+`make clean`
 
 # Extra Options
 ## Missing Types
