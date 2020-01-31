@@ -82,7 +82,9 @@ COPY_UNMATCHED_FILES_DIR is properly set, then it will be copied to
 $COPY_UNMATCHED_FILES_DIR/Types.swift.
 
 ## Run the Code Generation
-`make codegen`
+```bash
+make codegen
+```
 
 ## Build Artifacts
 The generated code is located in `./codegen`. If
@@ -102,7 +104,9 @@ Example:
 ```
 
 ## Clean-up ie Reset the Project
-`make clean`
+```bash
+make clean
+```
 
 # Extra Options
 ## Missing Types
