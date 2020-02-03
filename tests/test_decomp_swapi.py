@@ -1,5 +1,5 @@
 from lean_schema import decomp
-import mock
+from unittest import mock
 import json
 import os
 
