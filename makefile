@@ -53,4 +53,5 @@ clean:
 	- rm package-lock.json
 	- rm -rf cov_html/
 	- rm -rf htmlcov/
+	- rm -rf test-reports/
 	- rm -rf venv/
