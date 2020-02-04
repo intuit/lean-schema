@@ -1,5 +1,5 @@
 """
-Create some subset of the INtuit Schema given some input parameters
+Create some subset of a GraphQL Schema given some input parameters
 
 """
 __author__ = "prussell"
@@ -15,22 +15,6 @@ import traceback
 import typing
 import uuid
 import yaml
-
-"""
-What do we want to do here?
-- Create a mapping of the schema TYpe sturcture (done)
-- For each input type or domain, add this to the set of Types that are 'full'
-  + Expanding this, means that IF an input is a terminal type, then add that
-  + ELIF an input is a domain, then add all terminal types under it
-  + ELSE reject
-- For-each 'full' type:
-  - For-each refrence
-    - If the reference is to another full type, keep as-is
-    - Else, replace the full refernece to just the type-code
-
-The only thing unclear here is whether this is "valid", but according to Peter it is
-
-"""
 
 LOG_LEVELS = {
     "DEBUG": logging.DEBUG,
@@ -49,10 +33,13 @@ class SchemaNode(object):
         self.inbound = []
         self.outbound = []
 
+    def __repr__(self):
+        return "SchemaNode -> {}".format(self.key)
+
 
 """
 User defined GraphQL Types. In GraphQL, Object is NOT the root of
-the Type heirchy, it's just one of these
+the Type heiarchy, it's just one of these
 
 """
 GRAPHQL_DEFINED_TYPES = {"enum", "input_object", "interface", "object", "union"}
@@ -88,18 +75,7 @@ class SwiftLanguage(object):
     }
 
 
-class JavaLanguage(object):
-    """
-    Data for the Java Language back-end. Pretty much don't change
-    anything, since the V4 Schema has a bunch of assumptions that its
-    targeting Java that should not be there.
-
-    """
-
-    KEY = "java"
-
-
-LANGUAGES_TABLE = {SwiftLanguage.KEY: SwiftLanguage, JavaLanguage.KEY: JavaLanguage}
+LANGUAGES_TABLE = {SwiftLanguage.KEY: SwiftLanguage}
 
 
 class GraphQLTypeRef(object):
@@ -281,22 +257,28 @@ def update_type_refs(root, graph, subgraph_keys, scalars_dict: dict = None):
                 stack.append(value)
 
 
-def mk_adj_from_graphql_schema(graphql_schema: dict) -> dict:
+def mk_graph_from_schema(graphql_schema: dict) -> dict:
     """
-    Make a simpla Adjaceny List representation of the Schema Typyes
+    Make a simple Adjacency List representation of the Schema Types
     from a GraphQL Schema formatted Object.
 
     A GraphQL Schema is basically just something that looks like this:
     {"errors" : [],
      "data" : {"__schema" : {..., 'types', ...}}
     }
-    
-    All we really care about are the types, we just want to construct
-    a mapping of keys to objects for Graph processing.
+    or just
+    {"__schema" : {..., 'types', ...}}
 
     """
     # We don't care about anything other than types
-    types = graphql_schema["data"]["__schema"]["types"]
+    if "data" in graphql_schema:
+        types = graphql_schema["data"]["__schema"]["types"]
+    elif "__schema" in graphql_schema:
+        types = graphql_schema["__schema"]["types"]
+    elif "types" in graphql_schema:
+        types = graphql_schema["types"]
+    else:
+        raise ValueError("Invalid GraphQL Schema, must have a 'types' section")
     adj = {}
 
     for T in types:
@@ -315,7 +297,7 @@ def mk_adj_from_graphql_schema(graphql_schema: dict) -> dict:
     return adj
 
 
-def load_schema(file_path="./intuit_schema.json"):
+def load_schema(file_path: str):
     with open(file_path) as ifile:
         return json.load(ifile)
 
@@ -343,86 +325,6 @@ def get_subtypes_of_domain(schema, domain, key_func=convert_type_path_key) -> li
     return R
 
 
-def get_terminal_keys(graph: typing.Dict[str, SchemaNode]) -> typing.Set[str]:
-    """
-    Get the set of terminal node keys ie those that we don't want to "pass-through" starting from any root nodes.
-
-    Just hard-code for now based on the V^3 computation
-
-    """
-    data = {
-        "Developer_AppConnectionMetaModel": 38,
-        "Transactions_OldAccountingTransactionMetaModel_Traits": 44,
-        "Company_SettingsMetaModel": 44,
-        "Company_CompanyLookupMetaModel": 47,
-        "Lists_BulkMetaModel": 47,
-        "Transactions_TransactionMetaModel_Traits": 48,
-        "Developer_ApplicationMetaModel": 51,
-        "Company_CompanyInfoMetaModel": 52,
-        "Transactions_OldAccountingTransactionMetaModel": 57,
-        "Network_Relationships_EmployeeMetaModel": 61,
-        "Transactions_TransactionMetaModel": 64,
-        "UserMetaModel": 66,
-        "Transactions_Links_LinkedTxnMetaModel": 66,
-        "Accounting_FinancialYearMetaModel": 67,
-        "Accounting_FinancialPeriodMetaModel": 68,
-        "Company_EmployerInfoMetaModel": 70,
-        "Company": 124,
-        "Mutation": 1028,
-        "MetaModel": 2330,
-        "Query": 2577,
-    }
-
-    return {k for k in list(data.keys())}
-
-
-def find_spanning_tree(
-    G: dict, root_keys: typing.Set[str], terminal_keys: typing.Set[str], max_depth: int
-) -> typing.Set[str]:
-    """
-    Find a (non-weighted) Spanning Tree of the Type Keys using BFS.
-    Initialize a Queue with all Root Keys
-    Until the Queue is empty, pull a node. If the node is a Terminal Type, end don't add anything. Otherwise, add all outbound refs to the Queue.
-
-    TODO: consider adding max-depth to make sure the search doesn't go too far
-
-    """
-    Q = queue.Queue()
-    # Init the Queue
-    for root_key in root_keys:
-        Q.put((root_key, 0))
-
-    # The set of processed Keys
-    keys = set()
-
-    while not Q.empty():
-        key, depth = Q.get()
-        if key not in keys:
-            keys.add(key)
-            if key not in terminal_keys and depth < max_depth:
-                # Not a terminal key, add all neighbors and keep going
-                if key not in G:
-                    # Dead key not in Schema?
-                    logging.warning(
-                        "Unrecognized node key {}, is it in the Schema?".format(key)
-                    )
-                    continue
-
-                for neighbor_key in G[key].outbound:
-                    if neighbor_key in G:
-                        Q.put((neighbor_key, depth + 1))
-                    else:
-                        logging.warning(
-                            "Unrecognized neighbor key {}, is it in the Schema?".format(
-                                neighbor_key
-                            )
-                        )
-
-            # else this is a terminal, so don't do anything
-
-    return keys
-
-
 def reduce_graphql_schema(schema, graph, subgraph_keys):
     """
     Reduce the GraphQL Schema to only include what's in the computed
@@ -430,7 +332,7 @@ def reduce_graphql_schema(schema, graph, subgraph_keys):
 
     """
     # Get root set
-    schema["data"]["__schema"]["types"] = [
+    schema["__schema"]["types"] = [
         graph[key].value for key in subgraph_keys if key in graph
     ]
     return schema
@@ -521,7 +423,7 @@ def get_types_from_file(G: dict, types_file: dict, types_set: set = None) -> set
         else:
 
             error_msg = "Unrecognized value for key 'types' in file {}, must have type list or str, but is {}".format(
-                args.types_file, type(types_from_file)
+                types_file, type(types_from_file)
             )
             logging.error(error_msg)
             raise ValueError(error_msg)
@@ -599,8 +501,10 @@ def main(args):
     with open(args.SCHEMA_FILE, encoding="utf-8") as ifile:
         schema = json.load(ifile)
 
+    schema = schema["data"] if "data" in schema else schema
+
     # Types file is optional, data can come from stdin or it
-    types_file={}
+    types_file = {}
     if args.types_file is not None:
         types_file_path = os.path.abspath(args.types_file)
         if os.path.exists(types_file_path):
@@ -629,9 +533,9 @@ def main(args):
 
     logging.debug("Adding GraphQLTypeRef types to Schema")
     for typeref_type in GRAPHQL_TYPE_REF_DICT.values():
-        schema["data"]["__schema"]["types"].append(typeref_type.to_dict())
+        schema["__schema"]["types"].append(typeref_type.to_dict())
 
-    graph = mk_adj_from_graphql_schema(schema)
+    graph = mk_graph_from_schema(schema)
     # Load all directly stated Types/Domains from file
     root_keys = set()
     types_size = 0
@@ -658,23 +562,6 @@ def main(args):
     # Get the set of keys for the valid subgraph
     subgraph_keys = {obj.get_name() for obj in GRAPHQL_TYPE_REF_DICT.values()}
     subgraph_keys.update(root_keys)
-
-    # Add Entity and all of its direct neighbors up to N levles
-    # Add Fundamental types and direct refs
-    for type_key in [
-        "Entity",
-        "Query",
-        # "Mutation"
-    ]:
-        type_obj = graph[type_key].value
-        type_keys = {type_key}.union(set(get_outbound_type_refs(type_obj)))
-        subgraph_keys.update(type_keys)
-        logging.debug(
-            "Types increased from {} to {} by adding direct refs of {}".format(
-                types_size, len(subgraph_keys), type_key
-            )
-        )
-        types_size = len(subgraph_keys)
 
     # Stuff like {'BigDecimal', 'Boolean', 'Float', 'ID', 'Int',
     # 'Long', 'String'} is defined in the Schema, so have to add it
@@ -709,19 +596,6 @@ def main(args):
             types_size, len(subgraph_keys), args.input_object_depth_level
         )
     )
-    types_size = len(subgraph_keys)
-
-    # Compute the Spanning Tree of RootKeys -> TerminalKeys
-    subgraph_keys.update(
-        find_spanning_tree(graph, subgraph_keys, get_terminal_keys(graph), 0)
-    )
-    logging.debug(
-        "Types increased from {} to {} by computing the Spanning Tree".format(
-            types_size, len(subgraph_keys)
-        )
-    )
-    types_size = len(subgraph_keys)
-    logging.debug("subgraph_keys are {}".format(sorted(subgraph_keys)))
 
     # Prune/clean up subraph by removing references to Types not in
     # the subraph. Also replace any Scalar Types that don't exist for
@@ -760,8 +634,6 @@ def main(args):
 
     # Shrink the schema to only include whats in the subgraph
     reduce_graphql_schema(schema, graph, subgraph_keys)
-
-    mk_adj_from_graphql_schema(schema)
 
     logging.debug("END run {}".format(run_uuid))
     print(json.dumps(schema))

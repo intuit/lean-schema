@@ -37,6 +37,7 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
+test-reports/
 .tox/
 .coverage
 .coverage.*
@@ -99,3 +100,18 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# IDE
+.idea/
+
+# JS stuff for convert.js
+node_modules/
+package-lock.json
+tests/schema.json
+
+# Project
+cov_html
+codegen
+queries
+log.decomp
+lean_schema.json

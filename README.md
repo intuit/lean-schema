@@ -3,7 +3,7 @@
 
 | LeanSchema Version | Supported Apollo Version(s) |
 | ------------- |:-------------:|
-| 1.0.0      | 1.9.2 | 
+| 2.0.0      | 2.22.0 | 
 
 ## Coverage
 ```bash
@@ -37,16 +37,26 @@ LeanSchema is used by many Production Mobile Apps at Intuit, including (but not 
 - Turbo Mobile
 
 ## Requirements
-- Docker >= 17. The code here was tested with `Docker version 17.03.2-ce, build f5ec1e2`
-- A set of GraphQL queries compatible with `Apollo v1.9.2`.
+- [Python](https://www.python.org/downloads/) >= 3.7.3.
+- [NPM](https://www.npmjs.com/get-npm) >= 6.13.7.
+- A set of GraphQL queries compatible with `Apollo v2.22.0`. Any set of valid GraphQL queries **should** work.
 
-**We have not tested/do not support any other software environments or
-configurations at this point in time.**
-
-This software has been tested on Ubuntu Linux 16.04 and Mac OS.
+### Install Requirements on Mac OS
+```bash
+brew install python
+brew upgrade python
+brew install npm
+brew upgrade npm
+```
 
 ## Get the Code
 [Download a release](https://github.com/intuit/lean-schema/releases) or clone [this repo](https://github.com/intuit/lean-schema).
+
+## Install the Project
+```bash
+cd lean-schema
+make install
+```
 
 ## Read and Edit the `codegen.properties` file
 `codegen.properties` is used to control important things like:
@@ -56,8 +66,8 @@ This software has been tested on Ubuntu Linux 16.04 and Mac OS.
 ### Set the `GRAPHQL_QUERIES_DIR` variable
 Example: `GRAPHQL_QUERIES_DIR=/home/$YOU/proj/qb-mobile-graphql`
 
-### Set the `SCHEMA_FILE` variable
-Example: `SCHEMA_FILE=/home/$YOU/proj/graphql.json`
+### Set the `GRAPHQL_SCHEMA_FILE` variable
+Example: `GRAPHQL_SCHEMA_FILE=/home/$YOU/proj/graphql.json`
 
 **Please Note**! LeanSchema currently understands [GraphQL Introspection Format](https://blog.apollographql.com/three-ways-to-represent-your-graphql-schema-a41f4175100d) Schemas. Please see the linked article for how to convert SDL and GraphQLSchemaObject Schemas to the Introsepction Format.
 
@@ -71,15 +81,10 @@ Example: Swift code generation creates a file called
 COPY_UNMATCHED_FILES_DIR is properly set, then it will be copied to
 $COPY_UNMATCHED_FILES_DIR/Types.swift.
 
-## Build the Docker image
-`sudo make docker_build`
-
-You need to run this once to setup and if a new version of LeanSchema is released.
-
-## Run the Docker image
-`sudo make docker_codegen`
-
-You run this whenever your GraphQL queries or Schema changes. You **do not** need to run `docker_build` again though!
+## Run the Code Generation
+```bash
+make codegen
+```
 
 ## Build Artifacts
 The generated code is located in `./codegen`. If
@@ -98,12 +103,17 @@ Example:
 └── updateCompanyInfoFromSettings.graphql.swift # This is the matching Swift file
 ```
 
+## Clean-up ie Reset the Project
+```bash
+make clean
+```
+
 # Extra Options
 ## Missing Types
 LeanSchema is fairly aggresive in how many Types it prunes from the Schema. If you notice certain Types or Domains-of-Types are missing in the `lean_schema.json` file, you have these options:
 
 ## Increase the INPUT_OBJECT_DEPTH_LEVEL variable
-In `./codegen.vars`:
+In `./codegen.properties`:
 ```
 # Default value is zero
 INPUT_OBJECT_DEPTH_LEVEL=0
@@ -136,28 +146,24 @@ domains:
 
 # Questions & Answers
 
-## When do I need to run `docker_build`?
+## When do I need to run `make install`?
 On initial project setup and if a new version of the tool is released.
 
-## When do I need to run `docker_codegen`?
+## When do I need to run `make codegen`?
 When your GraphQL queries or GraphQL Schema change.
 
 ## How do I edit the Apollo command for Codegen?
-If you need to change the Apollo commands, just change the `codegen_lean` rule in the `makefile`:
+If you need to change the Apollo commands, just change the `codegen` rule in the `makefile`:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
 ```
 
 ## Turn off the file copy & match for generated files?
 Set `COPY_GENERATED_FILES_AFTER_CODEGEN=false` in `codegen.properties`
 
 ## Generate a single large file for codegen?
-Change the `codegen_lean` makefile command to this:
+Change the `codegen` makefile command to this:
 ```makefile
-codegen_lean:
-        ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/.graphql" codegen.lean.swift
+apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen.lean.swift
 ```
 Only a single file named `codegen.lean.swift` will be created.
-
-

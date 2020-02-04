@@ -1,43 +1,57 @@
 # Include everything from the properties file as an env var referencable here
 include codegen.properties
-include codegen.vars
 export
 
+VENV_DIR = ./venv
+PYTHON3 = $(VENV_DIR)/bin/python3
+PIP3 = $(VENV_DIR)/bin/pip3
+PYTEST = $(VENV_DIR)/bin/python3 -m pytest
+APOLLO_PACKAGE_VERSION=2.22.0
+
+.PHONY: lean_schema test clean install codegen
+
 test:
-	echo $(GRAPHQL_QUERIES_DIR)
+	$(PIP3) install -r requirements.txt
+	$(PIP3) install -r test.requirements.txt
+	$(PYTEST) --cov-report term --cov-report html --junitxml=test-reports/junit.xml --cov=lean_schema/ tests/
+
+install:
+	python3 -m venv $(VENV_DIR)
+	npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
+	$(PIP3) install --upgrade pip
+	$(PIP3) install -r requirements.txt
+
+codegen: lean_schema
+	ls -lah lean_schema.json && apollo client:codegen --passthroughCustomScalars --localSchemaFile=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
+	$(PYTHON3) ./lean_schema/post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
+
+lean_schema:
+	./check_graphqljson.sh $(GRAPHQL_SCHEMA_FILE)
+	- mkdir queries/
+	cp $(GRAPHQL_SCHEMA_FILE) queries/graphql_schema.json
+	find $(GRAPHQL_QUERIES_DIR) -name '*.graphql' | xargs -I % cp % ./queries/
+	find $(GRAPHQL_QUERIES_DIR) -name '*.gql' | xargs -I % cp % ./queries/
+	bash ./copy_types_yaml.sh "$(TYPES_YAML_FILE)" queries/types.yaml
+	$(PYTHON3) -m lean_schema.get_types queries/graphql_schema.json queries/ | $(PYTHON3) -m lean_schema.decomp queries/graphql_schema.json --types-file queries/types.yaml --input-object-depth-level=$(INPUT_OBJECT_DEPTH_LEVEL) | tee lean_schema.json 1> /dev/null
 
 clean:
 	- find . -name "*~" | xargs rm
-	- rm -rf __pycache__
 	- rm -rf .pytest_cache/
 	- rm ./*.scala
 	- rm ./*.swift
 	- echo "" > apollo.log
 	- find . -name __generated__ | xargs rm -rf
 	- rm -rf ./queries/*
-
-codegen_full:
-	ls -lah queries/intuit_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=queries/intuit_schema.json --queries="queries/**/*.graphql" codegen.full.swift && cp -v ./codegen* /opt/mount
-
-codegen_lean:
-	ls -lah lean_schema.json && apollo codegen:generate --passthroughCustomScalars --schema=lean_schema.json --queries="queries/**/*.graphql" --target=swift codegen/
-
-lean_schema:
-	node get_types_for_queries.js queries/intuit_schema.json "queries/**/*graphql" | python3 ./decomp.py queries/intuit_schema.json --types-file queries/types.yaml --input-object-depth-level=$(INPUT_OBJECT_DEPTH_LEVEL) | tee lean_schema.json 1> /dev/null
-
-all: lean_schema codegen_lean
-	cp -v ./codegen/* /opt/mount
-	cp -v lean_schema.json /opt/mount
-
-docker_build:
-	docker build -t leanschema .
-
-docker_codegen:
-	cp -r $(GRAPHQL_QUERIES_DIR) $(DOCKER_BUILD_QUERIES_DIR)
-	cp $(SCHEMA_FILE) $(DOCKER_BUILD_QUERIES_DIR)/intuit_schema.json
-	bash ./copy_types_yaml.sh "$(TYPES_YAML_FILE)" $(DOCKER_BUILD_QUERIES_DIR)/types.yaml
-	docker run -v $(CURDIR)/$(DOCKER_BUILD_QUERIES_DIR):/opt/intuit/pte/leanschema/queries -v $(CURDIR)/codegen:/opt/mount -e INPUT_OBJECT_DEPTH_LEVEL leanschema make all && echo "Wrote output files to $(CURDIR)/codegen"
-	python post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
-
-docker_codegen_full:
-	docker run -v $(CURDIR)/codegen:/opt/mount leanschema make codegen_full && echo "Wrote output files to $(CURDIR)/codegen"
+	- rm -rf ./queries/.[!.]*
+	- rm -rf ./codegen/
+	- rm ./lean_schema.json
+	- rm ./log.decomp
+	- rm ./apollo.log
+	- rm -rf lean_schema.egg-info
+	- find . -name __pycache__ | xargs rm -rf
+	- rm -rf ./node_modules
+	- rm package-lock.json
+	- rm -rf cov_html/
+	- rm -rf htmlcov/
+	- rm -rf test-reports/
+	- rm -rf venv/
