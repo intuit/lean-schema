@@ -27,7 +27,7 @@ codegen: lean_schema
 
 lean_schema:
 	./check_graphqljson.py $(GRAPHQL_SCHEMA_FILE)
-	- mkdir queries/
+	mkdir -p queries/
 	cp $(GRAPHQL_SCHEMA_FILE) queries/graphql_schema.json
 	find $(GRAPHQL_QUERIES_DIR) -name '*.graphql' | xargs -I % cp % ./queries/
 	find $(GRAPHQL_QUERIES_DIR) -name '*.gql' | xargs -I % cp % ./queries/
