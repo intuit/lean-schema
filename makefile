@@ -15,6 +15,9 @@ test:
 	$(PIP3) install -r test.requirements.txt
 	$(PYTEST) tests/
 
+coverage:
+	$(PYTEST) --cov-report term --cov=lean_schema/ tests/
+
 install:
 	python3 -m venv $(VENV_DIR)
 	npm install -g apollo@$(APOLLO_PACKAGE_VERSION)
