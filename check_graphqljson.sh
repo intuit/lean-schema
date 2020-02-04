@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat ${1} | python -c "import sys, json; print(json.load(sys.stdin)['data']['__schema'])" > /dev/null 2>&1
+cat ${1} | python -c "import sys, json; json.load(sys.stdin)['data']['__schema']" > /dev/null 2>&1
 
 if [[ $? -eq 0 ]]; then
     exit 0
