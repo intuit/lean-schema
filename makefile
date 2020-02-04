@@ -15,8 +15,8 @@ test:
 	$(PIP3) install -r test.requirements.txt
 	$(PYTEST) tests/
 
-coverage:
-	$(PYTEST) --cov-report term --cov=lean_schema/ tests/
+coverage: test
+	$(PYTEST) --cov-report term --cov-report html --cov=lean_schema/ tests/
 
 install:
 	python3 -m venv $(VENV_DIR)
