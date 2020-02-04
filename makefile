@@ -13,10 +13,7 @@ APOLLO_PACKAGE_VERSION=2.22.0
 test:
 	$(PIP3) install -r requirements.txt
 	$(PIP3) install -r test.requirements.txt
-	$(PYTEST) tests/
-
-coverage: test
-	$(PYTEST) --cov-report term --cov-report html --cov=lean_schema/ tests/
+	$(PYTEST) --cov-report term --cov-report html --junitxml=test-reports/junit.xml --cov=lean_schema/ tests/
 
 install:
 	python3 -m venv $(VENV_DIR)
@@ -55,4 +52,5 @@ clean:
 	- rm -rf ./node_modules
 	- rm package-lock.json
 	- rm -rf cov_html/
+	- rm -rf htmlcov/
 	- rm -rf venv/
