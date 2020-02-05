@@ -26,8 +26,8 @@ codegen: lean_schema
 	$(PYTHON3) ./lean_schema/post_process.py --copy-unmatched-files-dir=$(COPY_UNMATCHED_FILES_DIR) --copy-codegen-files=$(COPY_GENERATED_FILES_AFTER_CODEGEN) ./codegen $(GRAPHQL_QUERIES_DIR)
 
 lean_schema:
-	./check_graphqljson.sh $(GRAPHQL_SCHEMA_FILE)
-	- mkdir queries/
+	./check_graphqljson.py $(GRAPHQL_SCHEMA_FILE)
+	mkdir -p queries/
 	cp $(GRAPHQL_SCHEMA_FILE) queries/graphql_schema.json
 	find $(GRAPHQL_QUERIES_DIR) -name '*.graphql' | xargs -I % cp % ./queries/
 	find $(GRAPHQL_QUERIES_DIR) -name '*.gql' | xargs -I % cp % ./queries/
