@@ -3,13 +3,15 @@
 import sys
 import json
 import os
+import argparse
 
-def main(args):
-    if not len(args) == 1:
-        usage()
-        sys.exit(1)
+def main():
 
-    abs_path = os.path.abspath(args[0])
+    parser = argparse.ArgumentParser(description='Check if a schema file is valid for our purposes')
+    parser.add_argument('schema_file', help='Path to the schema file to validate')
+    args = parser.parse_args()
+
+    abs_path = os.path.abspath(args.schema_file)
     if not (os.path.exists(abs_path) and os.path.isfile(abs_path)):
         print("schema_file must be a file", file=sys.stderr)
         sys.exit(1)
@@ -43,8 +45,5 @@ def is_file_good(file_path):
     else:
         return False
 
-def usage():
-    print("Usage: {} schema_file".format(sys.argv[0]), file=sys.stderr)
-
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
