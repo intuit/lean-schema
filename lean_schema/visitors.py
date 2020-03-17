@@ -3,7 +3,9 @@ from graphql.language.visitor import Visitor
 
 class AllTypesVisitor(Visitor):
     """
-    Visitor to hoover up all referenced Types in a Query and collect them as a single Set
+    Visitor to get all referenced Types in a Query and collect them as
+    a single Set. Abstract types are expanded in get_types.py, then the
+    entire Root Set is passed to decomp.py to create the actual sub-graph.
 
     """
 
@@ -21,9 +23,6 @@ class AllTypesVisitor(Visitor):
         path,  # type: List[Union[int, str]]
         ancestors,  # type: List[Any]
     ):
-        # if getattr(node, 'value', None) == "id" or getattr(node, 'name', None) == "id":
-        #     from ipdb import set_trace
-        #     set_trace()
         self.types.add(self.context.get_type())
         self.types.add(self.context.get_input_type())
         self.types.add(self.context.get_parent_type())
@@ -37,7 +36,6 @@ class AllTypesVisitor(Visitor):
         path,  # type: List[Union[int, str]]
         ancestors,  # type: List[Any]
     ):
-        print("enter_FragmentSpread")
         fragName = node.name.value
         fragType = self.context.getFragmentType(fragName)
         if fragType:
